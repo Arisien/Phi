@@ -1,0 +1,29 @@
+{
+  "name": "phi",
+  "version": "1.0.0",
+  "description": "Discord bot",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arisien/Phi.git"
+  },
+  "keywords": [
+    "node",
+    "discord.js",
+    "bot",
+    "discord"
+  ],
+  "author": "Arisien",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Arisien/Phi/issues"
+  },
+  "homepage": "https://github.com/Arisien/Phi#readme",
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "discord.js": "^12.5.3"
+  }
+}
