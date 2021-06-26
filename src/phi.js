@@ -1,28 +1,36 @@
 const { Client, Collection } = require('discord.js');
-const Logger = require('./api/logger.js');
+const Database = require('./api/database');
+const logger = require('./util/logger');
 const fs = require('fs');
 
 module.exports = class Phi extends Client {
     constructor (config) {
         super();
 
+        if (!config.database) logger.terminate('No database in config');
+
+        if (!config.token) logger.terminate('No discord token in config');
+
+        if (!config.prefix) {
+            logger.warn('No prefix in config, using -');
+            config.prefix = '-';
+        }
+
         this.config = config;
 
         this.commands = new Collection();
 
-        this.logger = new Logger();
+        this.database = new Database(config.database);
 
         this.initialized = false;
     }
 
     login () {
-        if (this.config.token == undefined) this.logger.terminate("No discord token")
-
         super.login(this.config.token);
     }
 
     loadCommands () {
-        if (!fs.existsSync('./src/commands')) this.logger.terminate("No commands folder")
+        if (!fs.existsSync('./src/commands')) logger.terminate("No commands folder")
 
         const dir = fs.readdirSync('./src/commands');
 
@@ -33,7 +41,7 @@ module.exports = class Phi extends Client {
     }
 
     loadListeners () {
-        if (!fs.existsSync('./src/listeners')) this.logger.terminate("No listeners folder");
+        if (!fs.existsSync('./src/listeners')) logger.terminate("No listeners folder");
 
         const dir = fs.readdirSync('./src/listeners');
 
@@ -44,7 +52,7 @@ module.exports = class Phi extends Client {
     }
 
     loadPlugins () {
-        if (!fs.existsSync('./plugins')) return this.logger.info("No plugins detected");
+        if (!fs.existsSync('./plugins')) return logger.info("No plugins detected");
 
         const dir = fs.readdirSync('./plugins');
 
@@ -64,7 +72,7 @@ module.exports = class Phi extends Client {
             count++;
         }
 
-        this.logger.info(count + " plugins loaded");
+        logger.info(count + " plugins loaded");
     }
 
     init () {
@@ -80,6 +88,6 @@ module.exports = class Phi extends Client {
 
         this.initialized = true;
 
-        this.logger.info("Phi initialized");
+        logger.info("Phi initialized");
     }
 }
