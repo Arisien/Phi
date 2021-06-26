@@ -7,12 +7,8 @@ module.exports = class Phi extends Client {
     constructor (config) {
         super();
 
-        if (!config.database) logger.terminate('No database in config');
-
-        if (!config.token) logger.terminate('No discord token in config');
-
         if (!config.prefix) {
-            logger.warn('No prefix in config, using -');
+            logger.warn('No prefix found in config: using -');
             config.prefix = '-';
         }
 
@@ -20,12 +16,12 @@ module.exports = class Phi extends Client {
 
         this.commands = new Collection();
 
-        this.database = new Database(config.database);
-
         this.initialized = false;
     }
 
     login () {
+        if (!this.config.token) logger.terminate('No discord token in config');
+
         super.login(this.config.token);
     }
 
@@ -85,6 +81,10 @@ module.exports = class Phi extends Client {
         this.loadListeners();
 
         this.loadPlugins();
+
+        if (!this.config.database) logger.terminate('No database in config');
+
+        this.database = new Database(this.config.database);
 
         this.initialized = true;
 
