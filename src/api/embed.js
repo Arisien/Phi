@@ -1,4 +1,5 @@
 const { MessageEmbed } = require('discord.js');
+const phi = require('../../main');
 
 module.exports = class Embed extends MessageEmbed {
   constructor (message = null, color = "#242424") {
