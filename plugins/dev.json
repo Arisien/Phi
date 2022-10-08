@@ -1,6 +1,6 @@
 {
     "name": "dev",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Development plugin for modifying bot and parent system. [WARNING] Unsafe - Do not use unless you know what you are doing.",
     "dependencies": [ "node-fetch" ],
     "config": {
