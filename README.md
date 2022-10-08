@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Phi is a modular discord bot coded in JavaScript. The bot is designed for easy implementation of plugins, as well as lots of customization for both the host and the bot users. The project requires NodeJS as a JavaScript runtime and for importing packages, as well as  MySQL for hosting the bot's database.
+Phi is a modular discord bot coded in JavaScript. The bot is designed for easy implementation of plugins, as well as lots of customization for both the host and the bot users. The project requires NodeJS as a JavaScript runtime and for importing packages.
 
 * *DISCLAIMER: Phi is in early development and has not been thoroughly tested for bugs. Moreover, not all features have been fully implemented*
 
@@ -13,14 +13,14 @@ In order to run Phi, a `config.json` file must be created. The following is an e
 ```json
 {
     "token": "",
-    "prefix": "-",
-    "channel": "
+    "prefix": "$",
+    "logchannel": ""
 }
 ```
 
 * `token`: The token of your Discord bot, get it at https://discord.com/developers.
 * `prefix`: The prefix of your bot's commands.
-* `channel`: An optional string containing discord channel id that the bot will log to if set.
+* `logchannel`: An optional string containing discord channel id that the bot will log to if set.
 
 ## Usage
 
