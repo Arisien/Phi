@@ -14,25 +14,20 @@ In order to run Phi, a `config.json` file must be created. The following is an e
 {
     "token": "",
     "prefix": "-",
-    "database": {
-        "host": "localhost",
-        "user": "root",
-        "password": "",
-        "database": "phidb"
-    }
+    "channel": "
 }
 ```
 
 * `token`: The token of your Discord bot, get it at https://discord.com/developers.
 * `prefix`: The prefix of your bot's commands.
-* `database`: An object containing the configuration for your MySQL database. Currently, the bot must be linked to an existing database and will not yet create its own.
+* `channel`: An optional string containing discord channel id that the bot will log to if set.
 
 ## Usage
 
-*NodeJS and MySQL are required to run Phi*
+*NodeJS is required to run Phi*
 
 * Clone the repository with `git clone https://github.com/Arisien/Phi.git`
-* Install all dependencies using `npm ci`
+* Install all dependencies using `npm install`
 * Fill in the `config.json` file with necessary data
 * Run Phi with `npm run start`
 
