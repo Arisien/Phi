@@ -11,6 +11,14 @@ module.exports = class Embed extends MessageEmbed {
     return new Embed (message, 0xe14747);
   }
 
+  static info (message) {
+    return new Embed (message, 0x4d58ff);
+  }
+
+  static warn (message) {
+    return new Embed (message, 0xff9838);
+  }
+	
   static rich (title, message, color = "#242424"){
     const embed = new Embed (message, color);
 
