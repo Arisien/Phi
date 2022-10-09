@@ -63,21 +63,29 @@ module.exports = class Phi extends Client {
 
         let count = 0;
 
-        const jsonFiles = fs.readdirSync('./plugins').filter(name => name.endsWith(".json"));
+        const dirs = fs.readdirSync('./plugins').filter(function (file) {
+            return fs.statSync(`./plugins/${file}`).isDirectory();
+        });
 
-        for (const jsonFile of jsonFiles) {
-            const json = require(`../plugins/${jsonFile}`);
+        for (const dir of dirs) {
 
-            if (json.name == undefined) {
-                this.logger.error(`Invalid plugin being loaded: ${jsonFile}`);
+            if (!fs.existsSync(`./plugins/${dir}/package.json`)) {
+                this.logger.error(`Invalid plugin being loaded: ${dir}`);
                 continue;
             }
 
-            if (json.dependencies != undefined) {
+            const pkg = require(`../plugins/${dir}/package.json`);
+
+            if (!pkg.name) {
+                this.logger.error(`Invalid plugin being loaded: ${dir}`);
+                continue;
+            }
+
+            if (pkg.dependencies) {
                 let load = true;
-                for (const dependency of json.dependencies) {
+                for (const dependency of pkg.dependencies) {
                     if (!fs.existsSync(`node_modules/${dependency}`)) {
-                        this.logger.error(`Plugin ${json.name} requires dependency ${dependency}`);
+                        this.logger.error(`Plugin ${pkg.name} requires dependency ${dependency}`);
                         load = false;
                         break;
                     }
@@ -85,29 +93,28 @@ module.exports = class Phi extends Client {
                 if (!load) continue;
             }
 
-            if (!fs.existsSync(`plugins/${json.name}.js`)) {
-                this.logger.error(`Could not find source file for plugin ${json.name}`);
+            if (!fs.existsSync(`plugins/${dir}/${pkg.main}`)) {
+                this.logger.error(`Could not find source file for plugin ${pkg.name} at plugins/${dir}/${pkg.main}`);
                 continue;
             }
-            
-            const plugin = require(`../plugins/${json.name}.js`);
 
-            plugin.name = json.name;
-            plugin.description = json.description;
-            plugin.dependencies = json.dependencies;
+            const plugin = require(`../plugins/${dir}/${pkg.main}`);
+
+            plugin.name = pkg.name;
+            plugin.description = pkg.description;
             
-            if (plugin.commands != undefined) {
+            if (plugin.commands) {
             	for (const command of plugin.commands) {
                 	this.commands.set(command.name, command);
                 }
-	        }
-                
-            if (plugin.listeners != undefined) {
+            }
+
+            if (plugin.listeners) {
                 for (const listener of plugin.listeners) {
                     this.on(listener.event, listener.run);
                 }
             }
-            
+
             this.plugins.set(plugin.name, plugin);
 
             this.logger.info(`Plugin ${plugin.name} loaded`);
