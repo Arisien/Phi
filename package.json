@@ -1,6 +1,6 @@
 {
   "name": "phi",
-  "version": "2.0.1",
+  "version": "2.0.5",
   "description": "Modular discord bot",
   "main": "main.js",
   "scripts": {

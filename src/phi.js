@@ -1,5 +1,7 @@
 const { Client, Collection } = require('discord.js');
 const Logger = require('./api/logger');
+
+const path = require('path');
 const fs = require('fs');
 
 module.exports = class Phi extends Client {
@@ -7,11 +9,6 @@ module.exports = class Phi extends Client {
         super();
         
         this.initialized = false;
-
-        if (!config.prefix) {
-            this.logger.warn('No prefix found in config: using $');
-            config.prefix = '$';
-        }
 
         this.config = config;
 
@@ -23,6 +20,7 @@ module.exports = class Phi extends Client {
 
 	    this.plugins = new Collection();
 
+        this.dir = path.join(__dirname, '..');
     }
 
     instantiate () {
@@ -37,54 +35,49 @@ module.exports = class Phi extends Client {
     }
 
     loadCommands () {
-        if (!fs.existsSync('./src/commands')) this.logger.terminate("No commands folder")
+        const dir = path.join(this.dir, 'src', 'commands');
 
-        const dir = fs.readdirSync('./src/commands');
+        if (!fs.existsSync(dir)) return this.logger.error(`No commands folder at ${dir}`);
 
-        for(const file of dir){
-            const command = require(`./commands/${file}`);
+        for(const file of fs.readdirSync(dir)) {
+            const command = require(path.join(dir, file));
             this.commands.set(command.name, command);
         }
     }
 
     loadListeners () {
-        if (!fs.existsSync('./src/listeners')) this.logger.terminate("No listeners folder");
+        const dir = path.join(this.dir, 'src', 'listeners');
 
-        const dir = fs.readdirSync('./src/listeners');
+        if (!fs.existsSync(dir)) return this.logger.error(`No listeners folder at ${dir}`);
 
-        for(const file of dir){
-            const listener = require(`./listeners/${file}`);
+        for(const file of fs.readdirSync(dir)){
+            const listener = require(path.join(dir, file));
             this.on(listener.event, listener.run);
         }
     }
 
     loadPlugins () {
-        if (!fs.existsSync('./plugins')) return this.logger.info("No plugins detected");
+        const dir = path.join(this.dir, 'plugins');
 
-        let count = 0;
+        if (!fs.existsSync(dir)) return this.logger.warn('No plugins folder detected');
 
-        const dirs = fs.readdirSync('./plugins').filter(function (file) {
-            return fs.statSync(`./plugins/${file}`).isDirectory();
+        const pluginDirs = fs.readdirSync(dir).filter(file => {
+            return fs.statSync(path.join(dir, file)).isDirectory();
         });
 
-        for (const dir of dirs) {
+        for (const pluginDir of pluginDirs) {
 
-            if (!fs.existsSync(`./plugins/${dir}/package.json`)) {
-                this.logger.error(`Invalid plugin being loaded: ${dir}`);
+            if (!fs.existsSync(path.join(dir, pluginDir, 'package.json'))) {
+                this.logger.error(`Invalid plugin being loaded: ${pluginDir}`);
                 continue;
             }
 
-            const pkg = require(`../plugins/${dir}/package.json`);
-
-            if (!pkg.name) {
-                this.logger.error(`Invalid plugin being loaded: ${dir}`);
-                continue;
-            }
+            const pkg = require(path.join(dir, pluginDir, 'package.json'));
 
             if (pkg.dependencies) {
                 let load = true;
                 for (const dependency of pkg.dependencies) {
-                    if (!fs.existsSync(`node_modules/${dependency}`)) {
+                    if (!fs.existsSync(path.join(this.dir, 'node_modules', dependency))) {
                         this.logger.error(`Plugin ${pkg.name} requires dependency ${dependency}`);
                         load = false;
                         break;
@@ -93,12 +86,12 @@ module.exports = class Phi extends Client {
                 if (!load) continue;
             }
 
-            if (!fs.existsSync(`plugins/${dir}/${pkg.main}`)) {
-                this.logger.error(`Could not find source file for plugin ${pkg.name} at plugins/${dir}/${pkg.main}`);
+            if (!fs.existsSync(path.join(dir, pluginDir, pkg.main))) {
+                this.logger.error(`Could not find source file for plugin ${pkg.name} at ${path.join(dir, pluginDir, pkg.main)}`);
                 continue;
             }
 
-            const plugin = require(`../plugins/${dir}/${pkg.main}`);
+            const plugin = require(path.join(dir, pluginDir, pkg.main));
 
             plugin.name = pkg.name;
             plugin.description = pkg.description;
@@ -118,12 +111,7 @@ module.exports = class Phi extends Client {
             this.plugins.set(plugin.name, plugin);
 
             this.logger.info(`Plugin ${plugin.name} loaded`);
-    
-            count++;
         }
-
-        this.logger.info(count + " plugins loaded");
-
     }
 
     init () {
