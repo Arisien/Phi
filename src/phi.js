@@ -76,8 +76,9 @@ module.exports = class Phi extends Client {
 
             if (pkg.dependencies) {
                 let load = true;
-                for (const dependency of pkg.dependencies) {
-                    if (!fs.existsSync(path.join(this.dir, 'node_modules', dependency))) {
+                for (const dependency in pkg.dependencies) {
+                    if (!fs.existsSync(path.join(this.dir, 'node_modules', dependency))
+                    && !fs.existsSync(path.join(dir, pluginDir, 'node_modules', dependency))) {
                         this.logger.error(`Plugin ${pkg.name} requires dependency ${dependency}`);
                         load = false;
                         break;
