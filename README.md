@@ -31,6 +31,10 @@ In order to run Phi, a `config.json` file must be created. The following is an e
 * Fill in the `config.json` file with necessary data
 * Run Phi with `npm run start`
 
+## Todo
+
+* Logger: remove bloated functionality. implement support for plugins to hook, listen, and utilize.
+
 ## Contributors
 
 * [Arisien](https://github.com/Arisien) - Main developer

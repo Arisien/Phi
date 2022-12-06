@@ -131,5 +131,7 @@ module.exports = class Phi extends Client {
         this.initialized = true;
 
         this.logger.info("Phi initialized");
+
+        this.emit('postinit');
     }
 }
